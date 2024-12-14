@@ -10,13 +10,19 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.commands.ClawCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeAngleCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeBucketCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeSpinCommand;
+import org.firstinspires.ftc.teamcode.commands.OuttakeArmCommand;
+import org.firstinspires.ftc.teamcode.commands.OuttakeBucketCommand;
 import org.firstinspires.ftc.teamcode.commands.TestCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OuttakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.TestSubsystem;
 
 
@@ -24,25 +30,29 @@ import org.firstinspires.ftc.teamcode.subsystems.TestSubsystem;
 public class MainTeleOp extends CommandOpMode {
     private Motor frontLeft, frontRight, backLeft, backRight;
 
-    private Motor slides;
-    private Motor intakeSlides;
-
     private TestSubsystem system;
 
     private TestCommand command;
+    private GamepadEx gPad1, gPad2;
+
+    private CRServo angler1, angler2, bucket;
+    private CRServo arm, outtakeBucket;
+    private Motor spinner;
+    private Motor slides;
+    private IntakeSubsystem intakeS;
+
+    private IntakeAngleCommand intakeAngleUp, intakeAngleDown;
+
+    private IntakeBucketCommand intakeBucketOn, intakeBucketOff;
+
+    private  OuttakeSubsystem outtakeS;
+
+    private OuttakeArmCommand armCommandUp, armCommandDown;
+
+    private  OuttakeBucketCommand outtakeBucketOn, outtakeBucketOff;
 
 
-    private GamepadEx gPad1;
 
-    private SimpleServo claw;
-    private SimpleServo intakeAngler;
-    private CRServo intakeSpinner;
-
-    private ClawSubsystem clawSub;
-    private ClawCommand clawCom;
-
-    private IntakeSubsystem intakeSub;
-    private IntakeCommand intakeCom;
 
     private final double DRIVE_MULT = 1.0;
     private final double SLOW_MULT = 0.5;
@@ -52,52 +62,80 @@ public class MainTeleOp extends CommandOpMode {
         frontRight = new Motor(hardwareMap, "fR");
         backLeft = new Motor(hardwareMap, "bL");
         backRight = new Motor(hardwareMap, "bR");
-        slides = new Motor(hardwareMap,"slides");
+        spinner = new Motor(hardwareMap,"spinner");
+        slides = new Motor(hardwareMap, "slides");
         //intakeSlides = new Motor(hardwareMap,"intakeSlides");
-
+        angler1 = hardwareMap.get(CRServo.class,"angler1");
+        angler2 = hardwareMap.get(CRServo.class,"angler2");
+        bucket = hardwareMap.get(CRServo.class,"bucket");
+        //arm = hardwareMap.get(CRServo.class,"arm");
+        //outtakeBucket = hardwareMap.get(CRServo.class,"outtakeBucket");
         gPad1 = new GamepadEx(gamepad1);
+        //gPad2 = new GamepadEx(gamepad2);
 
-        //claw = new SimpleServo(hardwareMap, "claw", -180, 30);
-        //clawSub = new ClawSubsystem(claw);
-        //clawCom = new ClawCommand(clawSub, 40, -6);
-
-        intakeAngler = new SimpleServo(hardwareMap, "angler",-180,30);
-        intakeSpinner = hardwareMap.get(CRServo.class,"intakeSpinner");
-        intakeSpinner.setDirection(CRServo.Direction.FORWARD);
-        intakeSub = new IntakeSubsystem(intakeAngler,intakeSpinner);
-        intakeCom = new IntakeCommand(intakeSub,-102,-10);
+        angler1.setDirection(CRServo.Direction.FORWARD);
+        angler2.setDirection(CRServo.Direction.REVERSE);
+        bucket.setDirection(CRServo.Direction.FORWARD);
 
 
-        //frontLeft.motor.setDirection(DcMotor.Direction.REVERSE);
-        //backLeft.motor.setDirection(DcMotor.Direction.REVERSE);
+
+        //arm.setDirection(CRServo.Direction.FORWARD);
+        //outtakeBucket.setDirection(CRServo.Direction.FORWARD);
+
+
+
+        frontLeft.motor.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.motor.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.motor.setDirection(DcMotor.Direction.REVERSE);
+        backRight.motor.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        spinner.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         slides.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        //intakeSlides.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
 
 
         frontLeft.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        spinner.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slides.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //intakeSlides.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        intakeS = new IntakeSubsystem(angler1,angler2,bucket,spinner);
+        intakeAngleUp = new IntakeAngleCommand(intakeS,true);
+        intakeAngleDown = new IntakeAngleCommand(intakeS,false);
+        intakeBucketOn = new IntakeBucketCommand(intakeS, true);
+        intakeBucketOff = new IntakeBucketCommand(intakeS, false);
+
+        //outtakeS = new OuttakeSubsystem(arm,outtakeBucket);
+        //armCommandUp = new OuttakeArmCommand(outtakeS, true);
+        //armCommandDown = new OuttakeArmCommand(outtakeS, false);
+        //outtakeBucketOn = new OuttakeBucketCommand(outtakeS, true);
+        //outtakeBucketOff = new OuttakeBucketCommand(outtakeS, false);
 
         system = new TestSubsystem(frontLeft, frontRight, backLeft, backRight);
 
         command = new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,DRIVE_MULT);
 
-        gPad1.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> intakeAngler.turnToAngle(-56)));
-        gPad1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).toggleWhenPressed(intakeCom);
 
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenHeld(new StartEndCommand(() -> slides.set(0.35), () -> slides.stopMotor()));
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenHeld(new StartEndCommand(() -> slides.set(-0.35), () -> slides.stopMotor()));
-        //gPad1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenHeld(new StartEndCommand(() -> intakeSlides.set(0.35), () -> intakeSlides.stopMotor()));
-        //gPad1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenHeld(new StartEndCommand(() -> intakeSlides.set(-0.35), () -> intakeSlides.stopMotor()));
+
         gPad1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,SLOW_MULT));
-        gPad1.getGamepadButton(GamepadKeys.Button.A).whenHeld(new StartEndCommand(() -> intakeSpinner.setPower(-1), () -> intakeSpinner.setPower(0)));
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenHeld(intakeAngleUp);
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenHeld(intakeAngleDown);
+        gPad1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenHeld(new IntakeSpinCommand(intakeS,true));
+        gPad1.getGamepadButton(GamepadKeys.Button.X).whenHeld(new IntakeSpinCommand(intakeS,false));
+        gPad1.getGamepadButton(GamepadKeys.Button.A).whenHeld(intakeBucketOn);
+        gPad1.getGamepadButton(GamepadKeys.Button.B).whenHeld(intakeBucketOff);
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenHeld(new StartEndCommand(() -> slides.set(0.35), () -> slides.stopMotor()));
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenHeld(new StartEndCommand(() -> slides.set(-0.35), () -> slides.stopMotor()));
+        //gPad2.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenHeld(armCommandUp);
+        //Pad2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenHeld(armCommandDown);
+        //gPad2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenHeld(outtakeBucketOn);
+        //gPad2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenHeld(outtakeBucketOff);
+
         register(system);
         system.setDefaultCommand(command);
     }
