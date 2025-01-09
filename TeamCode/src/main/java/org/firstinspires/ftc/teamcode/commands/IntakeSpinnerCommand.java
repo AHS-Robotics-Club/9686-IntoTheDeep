@@ -2,21 +2,21 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
-public class IntakeAngleCommand extends CommandBase {
+public class IntakeSpinnerCommand extends CommandBase {
     private IntakeSubsystem subsystem;
-    private boolean isUp;
-    public IntakeAngleCommand(IntakeSubsystem sub, boolean isUp){
+    private boolean isForward;
+    public IntakeSpinnerCommand(IntakeSubsystem sub, boolean isForward){
         subsystem = sub;
+        this.isForward = isForward;
     }
 
     @Override
     public void initialize(){
-        subsystem.angler(isUp);
+        subsystem.spin(isForward);
     }
     public void end(boolean interrupted){
-        subsystem.angleStop();
+        subsystem.stopSpin();
     }
 }

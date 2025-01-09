@@ -36,6 +36,6 @@ public class TestCommand extends CommandBase {
     public void execute(){
         mecDrive.drive(m_strafe.getAsDouble() * 0.9 * multiplier,
                 m_forward.getAsDouble() * 0.9 * multiplier,
-                m_turn.getAsDouble() * 0.88 * multiplier);
+                m_turn.getAsDouble() * -0.88 * multiplier);
     }
 }
