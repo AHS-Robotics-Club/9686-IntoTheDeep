@@ -17,31 +17,31 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void anglerEngage(boolean isUp) {
         if(isUp) {
-            angler1.rotateByAngle(90);
-            angler2.rotateByAngle(90);
-            bucket.rotateByAngle(-90);
+            angler1.turnToAngle(360);
+            angler2.turnToAngle(360);
+            //bucket.turnToAngle(-90);
         } else {
-            angler1.rotateByAngle(-90);
-            angler2.rotateByAngle(-90);
-            bucket.rotateByAngle(90);
+            angler1.turnToAngle(0);
+            angler2.turnToAngle(0);
+            //bucket.turnToAngle(0);
         }
     }
 
     public void anglerExecute(boolean isUp) {
         if(isUp) {
-            angler1.rotateByAngle(30);
-            angler2.rotateByAngle(30);
+            angler1.turnToAngle(180);
+            angler2.turnToAngle(180);
         } else {
-            angler1.rotateByAngle(-30);
-            angler2.rotateByAngle(-30);
+            angler1.turnToAngle(90);
+            angler2.turnToAngle(90);
         }
     }
 
     public void bucket(boolean isOn) {
         if(isOn) {
-            bucket.rotateByAngle(-20);
+            bucket.turnToAngle(360);
         } else {
-            bucket.rotateByAngle(20);
+            bucket.turnToAngle(0);
         }
     }
 

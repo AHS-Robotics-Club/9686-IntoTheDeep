@@ -56,7 +56,7 @@ public class Meet4TeleOp extends CommandOpMode {
         frontRight.motor.setDirection(DcMotor.Direction.REVERSE);
         backLeft.motor.setDirection(DcMotor.Direction.REVERSE);
         backRight.motor.setDirection(DcMotor.Direction.REVERSE);
-        angler1.setInverted(true);
+        angler2.setInverted(true);
 
         frontLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -86,10 +86,10 @@ public class Meet4TeleOp extends CommandOpMode {
         command = new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,DRIVE_MULT);
 
         gPad1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,SLOW_MULT));
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(bucketOn);
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(bucketOff);
-        gPad1.getGamepadButton(GamepadKeys.Button.X).toggleWhenPressed(engageDown,engageUp);
-        gPad1.getGamepadButton(GamepadKeys.Button.Y).toggleWhenPressed(executeDown,executeUp);
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).toggleWhenPressed(bucketOn,bucketOff);
+
+        gPad1.getGamepadButton(GamepadKeys.Button.X).toggleWhenPressed(engageUp,engageDown);
+        //gPad1.getGamepadButton(GamepadKeys.Button.Y).toggleWhenPressed(executeDown,executeUp);
         gPad1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenHeld(spin);
         gPad1.getGamepadButton(GamepadKeys.Button.B).whenHeld(backSpin);
         gPad1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenHeld(new StartEndCommand(() -> slides.set(0.35), () -> slides.stopMotor()));

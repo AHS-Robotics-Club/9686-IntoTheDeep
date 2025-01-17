@@ -9,6 +9,7 @@ public class IntakeBucketCommand extends CommandBase {
     private boolean isOn;
     public IntakeBucketCommand(IntakeSubsystem sub, boolean isOn){
         subsystem = sub;
+        this.isOn = isOn;
     }
 
     @Override
