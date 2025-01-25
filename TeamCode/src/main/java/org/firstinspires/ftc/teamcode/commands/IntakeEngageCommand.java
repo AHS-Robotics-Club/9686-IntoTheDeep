@@ -16,4 +16,7 @@ public class IntakeEngageCommand extends CommandBase {
     public void initialize(){
         subsystem.anglerEngage(isUp);
     }
+    public void end(boolean interrupted){
+        subsystem.anglerStop();
+    }
 }
