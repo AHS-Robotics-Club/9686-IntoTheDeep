@@ -5,10 +5,12 @@ import com.arcrobotics.ftclib.command.StartEndCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.commands.ClawCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeBucketCommand;
@@ -48,9 +50,9 @@ public class Meet4TeleOp extends CommandOpMode {
         frontRight = new Motor(hardwareMap, "fR");
         backLeft = new Motor(hardwareMap, "bL");
         backRight = new Motor(hardwareMap, "bR");
-        angler1 = hardwareMap.get(CRServo.class, "angler1");
-        angler2 = hardwareMap.get(CRServo.class, "angler1");
-        bucket = hardwareMap.get(CRServo.class, "bucket");
+        angler1 = hardwareMap.crservo.get("angler1");
+        angler2 =  hardwareMap.crservo.get("angler2");
+        bucket =  hardwareMap.crservo.get("bucket");
         spinner = new Motor(hardwareMap, "spinner");
         slidesI = new Motor(hardwareMap,"slidesI");
         slidesC = new Motor(hardwareMap, "slidesC");
@@ -64,7 +66,7 @@ public class Meet4TeleOp extends CommandOpMode {
         frontRight.motor.setDirection(DcMotor.Direction.REVERSE);
         backLeft.motor.setDirection(DcMotor.Direction.REVERSE);
         backRight.motor.setDirection(DcMotor.Direction.REVERSE);
-        angler2.setInverted(true);
+        angler2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -94,9 +96,11 @@ public class Meet4TeleOp extends CommandOpMode {
         clawOn = new ClawCommand(clawS, true);
         clawOff = new ClawCommand(clawS, false);
 
-        command = new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,DRIVE_MULT);
+        command = new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,DRIVE_MULT,false);
 
-        gPad1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,SLOW_MULT));
+        gPad1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,SLOW_MULT,false));
+        gPad2.getGamepadButton(GamepadKeys.Button.A).whenHeld(new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,DRIVE_MULT,true));
+        gPad2.getGamepadButton(GamepadKeys.Button.B).whenHeld(new TestCommand(system, gPad1::getLeftX, gPad1::getLeftY, gPad1::getRightX,SLOW_MULT,true));
         gPad2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenHeld(bucketOn);
         gPad2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenHeld(bucketOff);
 
@@ -104,12 +108,12 @@ public class Meet4TeleOp extends CommandOpMode {
         gPad2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenHeld(engageDown);
         gPad2.getGamepadButton(GamepadKeys.Button.X).whenHeld(clawOn);
         gPad2.getGamepadButton(GamepadKeys.Button.Y).whenHeld(clawOff);
-        //gPad1.getGamepadButton(GamepadKeys.Button.Y).toggleWhenPressed(executeDown,executeUp);
+       // gPad1.getGamepadButton(GamepadKeys.Button.Y).toggleWhenPressed(executeDown,executeUp);
         gPad2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenHeld(spin);
         gPad2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenHeld(backSpin);
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenHeld(new StartEndCommand(() -> slidesI.set(0.35), () -> slidesI.stopMotor()));
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenHeld(new StartEndCommand(() -> slidesI.set(-0.35), () -> slidesI.stopMotor()));
-        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenHeld(new StartEndCommand(() -> slidesC.set(0.35), () -> slidesC.stopMotor()));
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenHeld(new StartEndCommand(() -> slidesI.set(0.35), () -> slidesI.stopMotor()));
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenHeld(new StartEndCommand(() -> slidesI.set(-0.35), () -> slidesI.stopMotor()));
+        gPad1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenHeld(new StartEndCommand(() -> slidesC.set(0.35), () -> slidesC.stopMotor()));
         gPad1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenHeld(new StartEndCommand(() -> slidesC.set(-0.35), () -> slidesC.stopMotor()));
 
 

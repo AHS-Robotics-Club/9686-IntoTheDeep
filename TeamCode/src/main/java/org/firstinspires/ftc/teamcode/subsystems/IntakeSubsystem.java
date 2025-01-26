@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -18,37 +18,37 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void anglerEngage(boolean isUp) {
         if(isUp) {
-            angler1.set(1);
-            angler2.set(1);
+            angler1.setPower(1);
+            angler2.setPower(1);
             //bucket.turnToAngle(-90);
         } else {
-            angler1.set(-1);
-            angler2.set(-1);
+            angler1.setPower(-1);
+            angler2.setPower(-1);
             //bucket.turnToAngle(0);
         }
     }
 
     public void anglerStop() {
-        angler1.set(0);
-        angler2.set(0);
+        angler1.setPower(0);
+        angler2.setPower(0);
     }
 
     public void bucket(boolean isOn) {
         if(isOn) {
-            bucket.set(1);
+            bucket.setPower(1);
         } else {
-            bucket.set(-1);
+            bucket.setPower(-1);
         }
     }
     public void bucketStop() {
-        bucket.set(0);
+        bucket.setPower(0);
     }
 
     public void spin(boolean isForward) {
         if(isForward) {
             spinner.set(1);
         } else {
-            spinner.set(-1);
+            spinner.set(-0.5);
         }
 
     }

@@ -12,14 +12,16 @@ public class TestCommand extends CommandBase {
     private final DoubleSupplier m_strafe, m_forward, m_turn;
     private double multiplier;
 
+    private double extraMult;
 
-    public TestCommand(TestSubsystem subsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn, double mult){
+
+    public TestCommand(TestSubsystem subsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn, double mult, boolean isReversed){
         mecDrive = subsystem;
         m_strafe = strafe;
         m_forward = forward;
         m_turn = turn;
-        multiplier = mult;
-
+        multiplier =  mult;
+        extraMult = isReversed ? -1 : 1;
         addRequirements(subsystem);
     }
     public TestCommand(TestSubsystem subsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn){
@@ -34,8 +36,8 @@ public class TestCommand extends CommandBase {
 
     @Override
     public void execute(){
-        mecDrive.drive(m_strafe.getAsDouble() * 0.9 * multiplier,
-                m_forward.getAsDouble() * 0.9 * multiplier,
+        mecDrive.drive(m_strafe.getAsDouble() * 0.9 * multiplier * extraMult,
+                m_forward.getAsDouble() * 0.9 * multiplier * extraMult,
                 m_turn.getAsDouble() * -0.88 * multiplier);
     }
 }
